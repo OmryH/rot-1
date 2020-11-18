@@ -4,11 +4,19 @@ let Player = function (x, y) {
   this.draw();
 };
 
-Player.prototype.draw = function() {
+Player.prototype.getX = function () {
+  return this.x;
+};
+
+Player.prototype.getY = function () {
+  return this.y;
+};
+
+Player.prototype.draw = function () {
   Game.display.draw(this.x, this.y, "@", "#ff0");
 };
 
-Player.prototype.act = function() {
+Player.prototype.act = function () {
   Game.engine.lock();
   window.addEventListener("keydown", this);
 };
@@ -26,6 +34,10 @@ Player.prototype.handleEvent = function (e) {
   };
 
   let code = e.keyCode;
+  if (code === 13 || code === 32) {
+    this.checkBox();
+    return;
+  }
   if (!(code in keyMap)) {
     return;
   }
@@ -45,4 +57,18 @@ Player.prototype.handleEvent = function (e) {
   this.draw();
   window.removeEventListener("keydown", this);
   Game.engine.unlock();
+};
+
+Player.prototype.checkBox = function () {
+  let key = this.x + "," + this.y;
+  if (Game.map[key] !== "*") {
+    alert("No box here!");
+  } else if (key === Game.loot) {
+    alert("You found the loot! You win!");
+    Game.engine.lock();
+    window.removeEventListener("keydown", this);
+  } else {
+    alert("This box is empty :-(");
+    Game.map[key] = ".";
+  }
 };
